@@ -1,16 +1,12 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router'
-import './index.css'
-import { TRPCProvider } from "@/providers/trpc"
-import App from './App.tsx'
+import { Routes, Route } from 'react-router'
+import Home from './pages/Home'
+import Admin from './pages/Admin'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <TRPCProvider>
-        <App />
-      </TRPCProvider>
-    </BrowserRouter>
-  </StrictMode>,
-)
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/admin" element={<Admin />} />
+    </Routes>
+  )
+}

@@ -1,73 +1,106 @@
-# React + TypeScript + Vite
+# Where to Add Environment Variables in Railway
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Step 1: Get Your Database URL
 
-Currently, two official plugins are available:
+Before adding variables, you need your database connection string:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+Dashboard
+├── Your Project
+│   ├─── mysql (your MySQL database service)
+│   │   └─── Click here → "Connect" tab → copy "MYSQL_URL"
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1. Click on your **MySQL database** service
+2. Click the **"Connect"** tab at the top
+3. Copy the value next to **"MYSQL_URL"** (looks like `mysql://user:pass@host:port/db`)
+4. This is your `DATABASE_URL`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Step 2: Add Variables to Your Main Service
+
+```
+Dashboard
+├── Your Project
+│   ├─── web service (your app - main deployment)
+│   │   └─── Click "Variables" tab → Click "New Variable"
+```
+
+1. Click on your **main web service** (the app deployment, NOT the database)
+2. Click the **"Variables"** tab at the top of the page
+3. Click **"New Variable"** button
+4. Add each variable one by one (see list below)
+
+---
+
+## Step 3: All Variables to Add
+
+Click "New Variable" for each of these:
+
+```
+Variable Name:           Value:
+┌────────────────────┐  ┌───────────────────────────────────────┐
+│  DATABASE_URL        │  mysql://... (from Step 1)          │
+├────────────────────┤  ├────────────────────────────────────────┤
+│  SMTP_HOST           │  smtp.gmail.com                      │
+├────────────────────┤  ├────────────────────────────────────────┤
+│  SMTP_USER           │  support@cowpaddyparty.com           │
+├────────────────────┤  ├────────────────────────────────────────┤
+│  SMTP_PASS           │  YOUR_GMAIL_APP_PASSWORD             │
+├────────────────────┤  ├────────────────────────────────────────┤
+│  SMTP_PORT           │  587                                 │
+├────────────────────┤  ├────────────────────────────────────────┤
+│  SMTP_SECURE         │  false                               │
+├────────────────────┤  ├────────────────────────────────────────┤
+│  APP_ID              │  19f162ca-29c2-8cc0-8000-0000d6a9d│
+├────────────────────┤  ├────────────────────────────────────────┤
+│  APP_SECRET          │  (from .env file)                   │
+├────────────────────┤  ├────────────────────────────────────────┤
+│  VITE_APP_ID         │  (same as APP_ID)                    │
+└────────────────────┘  └────────────────────────────────────────┘
+```
+
+---
+
+## Step 4: Get Your Gmail App Password
+
+**This is NOT your regular Gmail password!** You need a special "App Password":
+
+1. Go to **https://myaccount.google.com/apppasswords**
+2. Sign in with the Gmail account you want to send emails FROM
+   - This should be the email you want ticket notifications sent to
+   - If you don't have `support@cowpaddyparty.com` as a Gmail, use any Gmail account for now
+3. Click **"Select app"** → choose **"Mail"**
+4. Click **"Select device"** → choose **"Other (Custom name)"**
+5. Type: **"Cow Paddy Party"**
+6. Click **"Generate"**
+7. Google shows you a 16-character password like: `abcd efgh ijkl mnop`
+8. **Copy it immediately** — you can't see it again!
+9. Paste that into Railway as your `SMTP_PASS` value
+
+---
+
+## Step 5: Redeploy
+
+After adding all variables:
+
+1. Railway will automatically detect the changes
+2. It will **rebuild and redeploy** your app automatically
+3. Click the **"Deploy"** link at the top to see progress
+4. When it says "Success" — your site is live!
+
+---
+
+## Quick Check: Is It Working?
+
+After deployment, test by visiting:
+```
+https://YOUR-RAILWAY-URL.com/api/trpc/ping
+```
+If you see `{"ok":true}` — the backend is running!
+
+Then test the frontend by visiting:
+```
+https://YOUR-RAILWAY-URL.com/
 ```
